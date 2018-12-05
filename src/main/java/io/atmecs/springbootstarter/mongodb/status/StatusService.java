@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+
+import io.atmecs.springbootstarter.mongodb.exception.StatusNotFoundException;
 
 /**
  * @author ruchira.more
@@ -30,6 +30,9 @@ public class StatusService {
 
 	public Status getstatus(String id) {
 		// TODO Auto-generated method stub
+		if(!statusrepo.findById(id).isPresent()) {
+			throw new StatusNotFoundException("ID is not present");
+		}
 		Optional<Status> optinalEntity=statusrepo.findById(id);
 		return optinalEntity.get();
 	}
@@ -47,9 +50,11 @@ public class StatusService {
 		return statusrepo.save(status);
 	}
 
-	public Void deleteStatus(String id) {
-		// TODO Auto-generated method stub
+	public void deleteStatus(String id)  {
+		try {
 		statusrepo.deleteById(id);
-		return null;
+		}catch (Exception e) {
+			e=new RuntimeException("Id is already deleted");
+		}
 	}
 }
